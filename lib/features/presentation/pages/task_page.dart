@@ -53,115 +53,123 @@ class TaskPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final taskCubit = context.read<TaskCubit>();
-    final themesProvider = context.watch<ThemesProvider>();
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddTaskWindow(context),
-        child: const Icon(Icons.add),
-      ),
-      appBar: AppBar(
-        elevation: 0,
-        title: Center(
-          child: Text(
-            'My Tasks',
-            style: GoogleFonts.dmSerifDisplay(
-              color: Theme.of(context).colorScheme.primary,
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-            ),
+    return Builder(
+      builder: (context) {
+        final taskCubit = context.read<TaskCubit>();
+        final themesProvider = context.watch<ThemesProvider>();
+        return Scaffold(
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => _showAddTaskWindow(context),
+            child: const Icon(Icons.add),
           ),
-        ),
-        actions: [
-          Switch(
-            activeColor: Theme.of(context).colorScheme.primary,
-            inactiveThumbColor: Theme.of(context).colorScheme.surface,
-            // inactiveTrackColor: Theme.of(context).colorScheme.secondary,
-            thumbIcon: WidgetStateProperty.resolveWith<Icon?>(
-              (Set<WidgetState> states) {
-                if (states.contains(WidgetState.selected)) {
-                  return const Icon(
-                      Icons.sunny); // Иконка при включенном состоянии
-                }
-                return const Icon(
-                    Icons.star); // Иконка при выключенном состоянии
-              },
-            ),
-            value: themesProvider.themeData == darkMode,
-            onChanged: (value) {
-              themesProvider.toggleTheme();
-            },
-          ),
-        ],
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              '/intro_page',
-              (route) => false,
-            );
-          },
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: Theme.of(context).colorScheme.primary,
-            size: 30,
-          ),
-        ),
-      ),
-      body: BlocBuilder<TaskCubit, List<TaskModel>>(
-        builder: (context, tasks) {
-          return ListView.builder(
-            itemCount: tasks.length,
-            itemBuilder: (context, index) {
-              final task = tasks[index];
-              return ListTile(
-                title: Text(
-                  task.name,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 20,
-                    decoration: task.isCompleted
-                        ? TextDecoration.lineThrough
-                        : TextDecoration.none,
-                  ),
+          appBar: AppBar(
+            elevation: 0,
+            title: Center(
+              child: Text(
+                'My Tasks',
+                style: GoogleFonts.dmSerifDisplay(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
                 ),
-                leading: Checkbox(
-                  value: task.isCompleted,
-                  onChanged: (value) => taskCubit.toggleTask(task),
-                ),
-                trailing: IconButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text(
-                            'Are you sure you want to delete this task?'),
-                        actions: [
-                          ButtonForAlertDialog(
-                            onTap: () => Navigator.of(context).pop(),
-                            text: 'Отмена',
-                          ),
-                          ButtonForAlertDialog(
-                            onTap: () {
-                              taskCubit.deleteTask(task.id);
-                              Navigator.of(context).pop();
-                            },
-                            text: 'Delete',
-                          ),
-                        ],
-                      ),
-                    );
+              ),
+            ),
+            actions: [
+              Switch(
+                activeColor: Theme.of(context).colorScheme.primary,
+                inactiveThumbColor: Theme.of(context).colorScheme.primary,
+                inactiveTrackColor: Theme.of(context).colorScheme.secondary,
+                thumbIcon: WidgetStateProperty.resolveWith<Icon?>(
+                  (Set<WidgetState> states) {
+                    if (states.contains(WidgetState.selected)) {
+                      return const Icon(
+                          Icons.sunny); // Иконка при включенном состоянии
+                    }
+                    return const Icon(
+                        Icons.star); // Иконка при выключенном состоянии
                   },
-                  icon: Icon(
-                    Icons.delete,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
                 ),
+                value: themesProvider.themeData == darkMode,
+                onChanged: (value) {
+                  themesProvider.toggleTheme();
+                },
+              ),
+            ],
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/intro_page',
+                  (route) => false,
+                );
+              },
+              icon: Icon(
+                Icons.arrow_back_ios_rounded,
+                color: Theme.of(context).colorScheme.primary,
+                size: 30,
+              ),
+            ),
+          ),
+          body: BlocBuilder<TaskCubit, List<TaskModel>>(
+            builder: (context, tasks) {
+              return ListView.builder(
+                itemCount: tasks.length,
+                itemBuilder: (context, index) {
+                  final task = tasks[index];
+                  return ListTile(
+                    title: GestureDetector(
+                      onTap: () => taskCubit
+                          .toggleTask(task), // Переключение состояния задачи
+                      child: Text(
+                        task.name,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 20,
+                          decoration: task.isCompleted
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                        ),
+                      ),
+                    ),
+                    leading: Checkbox(
+                      value: task.isCompleted,
+                      onChanged: (value) => taskCubit.toggleTask(task),
+                    ),
+                    trailing: IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text(
+                                'Are you sure you want to delete this task?'),
+                            actions: [
+                              ButtonForAlertDialog(
+                                onTap: () => Navigator.of(context).pop(),
+                                text: 'Close',
+                              ),
+                              ButtonForAlertDialog(
+                                onTap: () {
+                                  taskCubit.deleteTask(task.id);
+                                  Navigator.of(context).pop();
+                                },
+                                text: 'Delete',
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.delete,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  );
+                },
               );
             },
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

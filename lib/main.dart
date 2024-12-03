@@ -5,6 +5,7 @@ import 'package:task_application/core/theme/themes_provider.dart';
 import 'package:task_application/features/data/models/task_hive_model.dart';
 import 'package:task_application/features/data/repository/task_hive_repository.dart';
 import 'package:task_application/features/domain/repository/task_repository.dart';
+import 'package:task_application/features/presentation/bloc/task_cubit.dart';
 import 'package:task_application/features/presentation/pages/intro_page.dart';
 import 'package:task_application/features/presentation/pages/task_page.dart';
 
@@ -13,9 +14,16 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(TaskHiveModelAdapter());
   var taskRepo = TaskHiveRepository();
+
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemesProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ThemesProvider()),
+        // Добавьте TaskCubit сюда
+        Provider(
+          create: (context) => TaskCubit(taskRepo),
+        ),
+      ],
       child: MainApp(taskRepository: taskRepo),
     ),
   );
