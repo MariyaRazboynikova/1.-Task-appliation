@@ -56,3 +56,54 @@ class ButtonForInitialPage extends StatelessWidget {
     );
   }
 }
+
+class ButtonForAlertDialog extends StatelessWidget {
+  final String text;
+  final void Function()? onTap;
+  const ButtonForAlertDialog({
+    super.key,
+    required this.text,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 120,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+                color: Theme.of(context).colorScheme.tertiary,
+                offset: const Offset(4.0, 4.0),
+                blurRadius: 15,
+                spreadRadius: 1),
+            BoxShadow(
+                color: Theme.of(context).colorScheme.secondary,
+                offset: const Offset(-4.0, -4.0),
+                blurRadius: 15,
+                spreadRadius: 1),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: 17,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
