@@ -1,13 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:hive_flutter/adapters.dart';
-import 'package:provider/provider.dart';
-import 'package:task_application/core/theme/themes_provider.dart';
-import 'package:task_application/features/data/models/task_hive_model.dart';
-import 'package:task_application/features/data/repository/task_hive_repository.dart';
-import 'package:task_application/features/domain/repository/task_repository.dart';
-import 'package:task_application/features/presentation/bloc/task_cubit.dart';
-import 'package:task_application/features/presentation/pages/intro_page.dart';
-import 'package:task_application/features/presentation/pages/task_page.dart';
+import 'package:task_application/export.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
