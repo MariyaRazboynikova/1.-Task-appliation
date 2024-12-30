@@ -36,8 +36,16 @@ class TaskCubit extends Cubit<List<TaskModel>> {
 
   Future<void> toggleTask(TaskModel task) async {
     final toggleTask = task.toggleComleted();
-    // обновление задачи в репозитории новым статусом завершения
     await taskRepository.updateTask(toggleTask);
     loadTasks();
+  }
+
+  Future<void> updateTaskName(int id, String newName) async {
+    final taskList = await taskRepository.getTasks();
+    final taskToUpdate = taskList.firstWhere((task) => task.id == id);
+
+    final updatedTask = taskToUpdate.copyWith(name: newName);
+    await taskRepository.updateTask(updatedTask);
+    loadTasks(); // Перезагружаем список задач
   }
 }

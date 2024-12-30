@@ -51,6 +51,44 @@ class TaskPage extends StatelessWidget {
     );
   }
 
+  void _showEditTaskWindow(BuildContext context, TaskModel task) {
+    final textController = TextEditingController(text: task.name);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Task'),
+        content: TextFormField(
+          controller: textController,
+          decoration: InputDecoration(hintText: 'Enter new task name'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              final newName = textController.text.trim();
+              if (newName.isNotEmpty) {
+                context.read<TaskCubit>().updateTaskName(task.id, newName);
+                Navigator.of(context).pop();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('The task name cannot be empty!')),
+                );
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Builder(
@@ -118,8 +156,8 @@ class TaskPage extends StatelessWidget {
                   final task = tasks[index];
                   return ListTile(
                     title: GestureDetector(
-                      onTap: () => taskCubit
-                          .toggleTask(task), // Переключение состояния задачи
+                      onTap: () => _showEditTaskWindow(
+                          context, task), // Вызов окна редактирования
                       child: Text(
                         task.name,
                         style: TextStyle(
